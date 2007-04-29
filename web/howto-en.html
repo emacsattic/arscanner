@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Howto - en</title>
+
+
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+  <meta name="author" content="taime002@free.fr" />
+
+  <meta name="description" content="Arscanner" />
+
+  <link rel="stylesheet" href="theme/touching.css" type="text/css" />
+
+</head>
+
+
+<body>
+
+<!-- Generated at www.csscreator.com -->
+<div id="container">
+<div id="banner">
+<div id="bannertitle">ArScanner</div>
+
+</div>
+
+<div id="outer">
+<div id="inner">
+<div id="left">
+<div class="verticalmenu">
+<ul>
+
+  <li><a href="arscanner-en.html">Home</a></li>
+
+  <li><a href="howto-en.html">Howto</a></li>
+
+  <li><a href="https://admisource.gouv.fr/frs/?group_id=43">Download</a></li>
+
+  <li><a href="howto-fr.html">Fran&ccedil;ais</a></li>
+
+  <li><a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></li>
+
+  <li><a href="http://validator.w3.org/check?uri=referer">XHTML</a></li>
+
+</ul>
+
+</div>
+
+</div>
+
+<div id="content">
+<h2>Author rights Scanner Howto</h2>
+
+<h3>Installation :<br />
+
+</h3>
+
+<ol>
+
+  <li>Download and save the tarball somewhere on your computer.</li>
+  <li>Extract the content of the tarball:<br />
+&ldquo;tar xvfz arscanner-0.1.tgz&rdquo;</li>
+
+  <li>type &ldquo;make&rdquo;</li>
+
+  <li>type &ldquo;sudo make install&rdquo;</li>
+
+  <li>add in your .emacs file the following line :<br />
+
+(autoload 'arscanner "arscanner" <br />
+
+"Manage copyright holders and license in source file header" t)<br />
+
+  </li>
+
+</ol>
+
+<p>Arscanner consists in two files.
+&ldquo;arscanner.el&rdquo; is a
+emacs lisp file for the arscanner mode. The other is a binary file
+arscanner, compiled from arscanner.l a flex file, for extracting
+copyright lines and recognizing the licenses. <br />
+
+<br />
+
+I don't presently use an Emacs bovinator like Semantic but it would be
+useful to eliminate dependencies on C code and Flex. <br />
+
+</p>
+
+<h3>How to use arscanner :</h3>
+
+<h4>To set some parameters&nbsp;</h4>
+
+<p><span style="font-style: italic;">M-x
+ars-set-exclude-extension</span> : Sets the extensions of files
+to ignore<br />
+
+<span style="font-style: italic;">M-x
+ars-set-include-extension</span> : Sets extensions of sources file<br />
+
+</p>
+
+<h4>To open an arscanner buffer</h4>
+
+<p><span style="font-style: italic;">M-x arscanner</span>
+and type the path to the root of your source tree. A
+buffer containing a list of files from the source tree is opened in
+Arscanner mode. <br />
+
+</p>
+
+<h4>On a file name's line</h4>
+
+<p><span style="font-style: italic;">[return],v</span>
+: Opens the source file in view mode <br />
+
+<span style="font-style: italic;">e</span> : Opens
+the source file in edit mode <br />
+
+</p>
+
+<h4>To add a header :</h4>
+
+<p><span style="font-style: italic;">t</span>
+: Puts the content of the yank buffer as header for the file&nbsp;
+on
+the current line. If the current line is a directory, then the process
+is done recursively on all the files with a source file's extension
+(see ars-set-include-extension), contained in the directory.</p>
+
+<h3>How to participate :</h3>
+
+<p>Everyone is invited to contribute ideas or code to Arscanner.
+you'll Find more resources on <a href="https://admisource.gouv.fr/projects/arscanner/">AdmiSource</a>.<br />
+
+<br />
+
+<br />
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="footer">
+<h1>&copy; copyright
+2007 taime, Sous licence <a href="http://creativecommons.org/licenses/sa/1.0/">creative
+commons "partage &agrave; l'identique"</a>&nbsp;
+<!-- Designed by FTM, http://freethoughts.ftmblog.com --></h1>
+
+</div>
+
+</div>
+
+<!-- end container -->
+</body>
+</html>

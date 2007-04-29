@@ -1,0 +1,124 @@
+
+
+
+
+body {
+margin : 0;
+padding : 0;
+background : rgb(231, 231, 231) url(body.jpg) repeat scroll left top;
+font-size : 11px;
+font-family : Verdana, Arial, SunSans-Regular, Sans-Serif;
+color : rgb(86, 75, 71);
+}
+a {
+color : rgb(219, 112, 147);
+font-family : verdana;
+font-size : 12px;
+}
+a:visited {
+color : rgb(196, 51, 0);
+}
+a:hover {
+color : rgb(196, 51, 0);
+}
+a:active {
+color : rgb(0, 0, 0);
+}
+h1 {
+margin : 0;
+font-size : 11px;
+text-transform : uppercase;
+}
+h2 {
+margin : 0;
+padding : 5px 10px;
+color : rgb(154, 18, 18);
+font-size : 20px;
+font-weight : normal;
+}
+img.download {
+vertical-align : middle;
+}
+#container {
+border : 1px solid rgb(141, 141, 141);
+background : rgb(232, 232, 232) url(menubottom.jpg) no-repeat scroll left bottom;
+width : 760px;
+margin-left : auto;
+margin-right : auto;
+height : 100%;
+}
+#banner {
+margin : 0;
+padding : 0;
+background : rgb(225, 221, 217) url(header.jpg) no-repeat scroll center bottom;
+height : 114px;
+text-align : center;
+}
+#banner img {
+padding : 10px 0;
+}
+#bannertitle {
+padding-top : 50px;
+font-size : 2em;
+font-weight : bold;
+}
+#content {
+padding : 0;
+background : rgb(255, 255, 255) url(content.jpg) no-repeat scroll right top;
+margin-left : 200px;
+margin-right : 0;
+}
+div#content {
+min-height : 600px;
+}
+p, pre, li {
+margin : 0;
+padding : 5px 10px;
+font-family : verdana;
+font-size : 12px;
+}
+#left {
+margin : 0;
+padding : 0;
+background : rgb(232, 232, 232) none repeat scroll 0% 50%;
+float : left;
+width : 200px;
+height : 90%;
+}
+#footer {
+margin : 0;
+padding : 0;
+background : transparent url(footer.gif) repeat-x scroll 0% 50%;
+clear : both;
+height : 35px;
+text-align : right;
+}
+
+#footer h1 {
+padding : 5px 5px 0 0;
+}
+.verticalmenu ul {
+margin : 0;
+padding : 10px;
+list-style-type : none;
+list-style-image : none;
+list-style-position : outside;
+}
+.verticalmenu li, .verticalmenu li a:link, .verticalmenu a:visited, .verticalmenu a:hover {
+display : block;
+font-family : Verdana, Arial, Helvetica, sans-serif;
+font-style : normal;
+font-variant : normal;
+font-weight : bold;
+font-size : 1.1em;
+line-height : normal;
+color : rgb(154, 18, 18);
+text-align : left;
+width : 140px;
+height : 32px;
+text-decoration : underline;
+}
+.verticalmenu a:hover {
+background : transparent url(menuhover.gif) no-repeat scroll 0% 50%;
+color : rgb(220, 77, 27);
+}
