@@ -1,34 +1,175 @@
 ;; Copyright 2006-2007 Thierry Aime
+;; Copyright 2002 Carsten Dominik
 
 ;; This is a scanner which explore a directory for extracting copyright 
 ;; and licence note from sources files. Result are displayed in an emacs 
 ;; buffer; an emacs mode help to broswe 
 
-;; This software is governed by the CeCILL license under French law and
-;; abiding by the rules of distribution of free software.  You can  use, 
-;; modify and/ or redistribute the software under the terms of the CeCILL
-;; license as circulated by CEA, CNRS and INRIA at the following URL
-;; "http://www.cecill.info". 
+;; This program is free software; you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License
+;; as published by the Free Software Foundation; either version 2
+;; of the License, or (at your option) any later version.
 
-;; As a counterpart to the access to the source code and  rights to copy,
-;; modify and redistribute granted by the license, users are provided only
-;; with a limited warranty  and the software's author,  the holder of the
-;; economic rights,  and the successive licensors  have only  limited
-;; liability. 
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
 
-;; In this respect, the user's attention is drawn to the risks associated
-;; with loading,  using,  modifying and/or developing or reproducing the
-;; software by the user in light of its specific status of free software,
-;; that may mean  that it is complicated to manipulate,  and  that  also
-;; therefore means  that it is reserved for developers  and  experienced
-;; professionals having in-depth computer knowledge. Users are therefore
-;; encouraged to load and test the software's suitability as regards their
-;; requirements in conditions enabling the security of their systems and/or 
-;; data to be ensured and,  more generally, to use and operate it in the 
-;; same conditions as regards security. 
+;; You should have received a copy of the GNU General Public License
+;; along with this program; if not, write to the Free Software Foundation, 
+;; Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-;; The fact that you are presently reading this means that you have had
-;; knowledge of the CeCILL license and that you accept its terms.
+
+
+(require 'outline)
+
+;; Visibility cycling' cycles through the most important
+;; states of an outline buffer. It is bound to the TAB key. 
+;; This piece of code is provided by Carsten Dominik :
+;; http://staff.science.uva.nl/~dominik/Tools/outline-magic.el
+
+
+;;; Visibility cycling
+
+(defcustom outline-cycle-emulate-tab nil
+  "Where should `outline-cycle' emulate TAB.
+nil    Never
+white  Only in completely white lines
+t      Everywhere except in headlines"
+  :group 'outlines
+  :type '(choice (const :tag "Never" nil)
+		 (const :tag "Only in completely white lines" white)
+		 (const :tag "Everywhere except in headlines" t)
+		 ))
+		 
+(defvar outline-promotion-headings nil
+  "A sorted list of headings used for promotion/demotion commands.
+Set this to a list of headings as they are matched by `outline-regexp',
+top-level heading first.  If a mode or document needs several sets of 
+outline headings (for example numbered and unnumbered sections), list
+them set by set, separated by a nil element.  See the example for
+`texinfo-mode' in the file commentary.") 
+(make-variable-buffer-local 'outline-promotion-headings)
+
+(defun outline-cycle (&optional arg)
+  "Visibility cycling for outline(-minor)-mode.
+
+- When point is at the beginning of the buffer, or when called with a
+  C-u prefix argument, rotate the entire buffer through 3 states:
+  1. OVERVIEW: Show only top-level headlines.
+  2. CONTENTS: Show all headlines of all levels, but no body text.
+  3. SHOW ALL: Show everything.
+
+- When point is at the beginning of a headline, rotate the subtree started
+  by this line through 3 different states:
+  1. FOLDED:   Only the main headline is shown.
+  2. CHILDREN: The main headline and the direct children are shown.  From
+               this state, you can move to one of the children and
+               zoom in further.
+  3. SUBTREE:  Show the entire subtree, including body text.
+
+- When point is not at the beginning of a headline, execute
+  `indent-relative', like TAB normally does."
+  (interactive "P")
+  (setq deactivate-mark t)
+  (cond
+
+   ((equal arg '(4))
+    ; Run `outline-cycle' as if at the top of the buffer.
+    (save-excursion
+      (goto-char (point-min))
+      (outline-cycle nil)))
+
+   (t
+    (cond
+     ((bobp) ;; Beginning of buffer: Global cycling
+
+      (cond
+       ((eq last-command 'outline-cycle-overview)
+	;; We just created the overview - now do table of contents
+	;; This can be slow in very large buffers, so indicate action
+	(message "CONTENTS...") 
+	(save-excursion
+	  ;; Visit all headings and show their offspring
+	  (goto-char (point-max))
+	  (catch 'exit
+	    (while (and (progn (condition-case nil
+				   (outline-previous-visible-heading 1)
+				 (error (goto-char (point-min))))
+			       t)
+			(looking-at outline-regexp))
+	      (show-branches)
+	      (if (bobp) (throw 'exit nil))))
+	  (message "CONTENTS...done"))
+	(setq this-command 'outline-cycle-toc))
+       ((eq last-command 'outline-cycle-toc)
+	;; We just showed the table of contents - now show everything
+	(show-all)
+	(message "SHOW ALL")
+	(setq this-command 'outline-cycle-showall))
+       (t
+	;; Default action: go to overview
+	(hide-sublevels 1)
+	(message "OVERVIEW")
+	(setq this-command 'outline-cycle-overview))))
+
+     ((save-excursion (beginning-of-line 1) (looking-at outline-regexp))
+      ;; At a heading: rotate between three different views
+      (outline-back-to-heading)
+      (let ((goal-column 0) beg eoh eol eos)
+	;; First, some boundaries
+	(save-excursion
+	  (outline-back-to-heading)           (setq beg (point))
+	  (save-excursion (outline-next-line) (setq eol (point)))
+	  (outline-end-of-heading)            (setq eoh (point))
+	  (outline-end-of-subtree)            (setq eos (point)))
+	;; Find out what to do next and set `this-command'
+	(cond
+	 ((= eos eoh) 
+	  ;; Nothing is hidden behind this heading
+	  (message "EMPTY ENTRY"))
+	 ((>= eol eos)
+	  ;; Entire subtree is hidden in one line: open it
+	  (show-entry)
+	  (show-children)
+	  (message "CHILDREN")
+	  (setq this-command 'outline-cycle-children))
+	 ((eq last-command 'outline-cycle-children)
+	  ;; We just showed the children, now show everything.
+	  (show-subtree)
+	  (message "SUBTREE"))
+	 (t 
+	  ;; Default action: hide the subtree.
+	  (hide-subtree)
+	  (message "FOLDED")))))
+
+     ;; TAB emulation
+     ((outline-cycle-emulate-tab)
+      (indent-relative))
+
+     (t
+      ;; Not at a headline: Do indent-relative
+      (outline-back-to-heading))))))
+
+(defun outline-cycle-emulate-tab ()
+  "Check if TAB should be emulated at the current position."
+  ;; This is called after the check for point in a headline,
+  ;; so we can assume we are not in a headline
+  (if (and (eq outline-cycle-emulate-tab 'white)
+	   (save-excursion
+	     (beginning-of-line 1) (looking-at "[ \t]+$")))
+      t
+    outline-cycle-emulate-tab))
+
+(defun outline-next-line ()
+  "Forward line, but mover over invisible line ends.
+Essentially a much simplified version of `next-line'."
+  (interactive)
+  (beginning-of-line 2)
+  (while (and (not (eobp))
+	      (get-char-property (1- (point)) 'invisible))
+    (beginning-of-line 2)))
+
 
 
 (defconst scanner "arscanner ")
@@ -127,6 +268,8 @@ with the copyright notice and the licence"
 		(save-excursion
 			(set-buffer "*arscanner*")
 			(arscanner-mode)
+			(outline-minor-mode)
+			(set-variable 'outline-regexp "Directory   >> \\(.*/\\)*")
 			(setq default-directory
 						(if (file-directory-p root-directory)
 								(file-name-as-directory root-directory)
@@ -191,6 +334,7 @@ with the copyright notice and the licence"
     (define-key arscanner-mode-map "v" 'ars-view-file)
     (define-key arscanner-mode-map "e" 'ars-edit-file)
     (define-key arscanner-mode-map "t" 'ars-tag-files)
+		(define-key arscanner-mode-map [(tab)] 'outline-cycle)
     arscanner-mode-map)
   "Keymap for arscanner major mode")
 
