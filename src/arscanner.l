@@ -64,7 +64,7 @@ The lexer stops automaticly after 20 lines.
 	BEGIN(HOLDERS);
 }
 
-<HOLDERS>([[:digit:]]{4}).*$ { 
+<HOLDERS>.*([[:digit:]]{4}).*$ { 
 	/* construction of the list of the copyright holders */	
 	if (holders==NULL)
 		holders=holder=malloc(sizeof(struct copyright_holder));
